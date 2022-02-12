@@ -23,7 +23,7 @@ import lombok.AllArgsConstructor;
 
 @Controller
 @RestController
-@RequestMapping("/colaborador")
+@RequestMapping("/pessoa")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @CrossOrigin("http://localhost:4200")
 public class PessoaController {
@@ -67,6 +67,10 @@ public class PessoaController {
 
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
-
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<?> consultarPorId(@PathVariable(required = true) Long id) {
+		return ResponseEntity.status(HttpStatus.OK).body(service.consultarPorId(id));
+	}
 
 }
