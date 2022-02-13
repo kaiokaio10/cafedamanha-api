@@ -5,21 +5,21 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @SuppressWarnings("serial")
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class PessoaNaoEncontradoException extends RuntimeException {
+public class PessoaException extends RuntimeException {
 	
-	public PessoaNaoEncontradoException() {
+	public PessoaException() {
 		super();
 	}
 
-	public PessoaNaoEncontradoException(String message, Throwable cause) {
+	public PessoaException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public PessoaNaoEncontradoException(String message) {
+	public PessoaException(String message) {
 		super(message);
 	}
 
-	public PessoaNaoEncontradoException(Throwable cause) {
+	public PessoaException(Throwable cause) {
 		super(cause);
 	}
 

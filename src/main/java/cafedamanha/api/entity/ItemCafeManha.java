@@ -9,33 +9,24 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name = "PESSOA")
-@AllArgsConstructor
-@NoArgsConstructor
-public class Pessoa implements Serializable {
+@Table(name = "ITEM_CAFE_MANHA")
+public class ItemCafeManha implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ID_PESSOA")
+	@Column(name = "ID_ITEM_CAFE_MANHA")
 	private Long id;
 
 	@Column(nullable = false, name = "NOME")
 	private String nome;
 
-	@Column(nullable = false, unique = true, name = "CPF")
-	private String cpf;
-
-	public Pessoa(Long id) {
-		super();
-		this.id = id;
-	}
+	@Column(nullable = false, name = "DESCRICAO")
+	private String descricao;
 
 }
