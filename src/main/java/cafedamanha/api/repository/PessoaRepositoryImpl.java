@@ -30,8 +30,8 @@ public class PessoaRepositoryImpl implements PessoaQuery {
 	}
 
 	@Override
-	public void deletar(Long id) {
-		String sql = "DELETE FROM PESSOA WHERE ID = ?";
+	public void excluir(Long id) {
+		String sql = "DELETE FROM PESSOA WHERE ID_PESSOA = ?";
 		Query query = entityManager.createNativeQuery(sql);
 		query.setParameter(1, id);
 		query.executeUpdate();
@@ -40,7 +40,7 @@ public class PessoaRepositoryImpl implements PessoaQuery {
 
 	@Override
 	public void alterar(Pessoa entity) {
-		String sql = "UPDATE Pessoa SET NOME = ?, CPF = ? WHERE ID = ?";
+		String sql = "UPDATE Pessoa SET NOME = ?, CPF = ? WHERE ID_PESSOA = ?";
 
 		Query query = entityManager.createNativeQuery(sql);
 		query.setParameter(3, entity.getId());
@@ -68,11 +68,19 @@ public class PessoaRepositoryImpl implements PessoaQuery {
 
 	@Override
 	public Pessoa pesquisarPorId(Long id) {
-		String sql = "SELECT p.* FROM Pessoa p WHERE ID = ?";
+		String sql = "SELECT p.* FROM Pessoa p WHERE ID_PESSOA = ?";
 
 		Query query = entityManager.createNativeQuery(sql, Pessoa.class);
 		query.setParameter(1, id);
 		return (Pessoa) query.getSingleResult();
 	}
+
+	@Override
+	public List<Pessoa> listarTodos() {
+	String sql = "SELECT * FROM Pessoa ";
+
+	Query query = entityManager.createNativeQuery(sql, Pessoa.class);
+	return (List<Pessoa>) query.getResultList();
+}
 
 }

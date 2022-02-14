@@ -9,12 +9,14 @@ public interface PessoaQuery {
 
 	Long inserir(Pessoa entity);
 
-	void deletar(Long id);
+	void excluir(Long id);
 
 	void alterar(Pessoa entity);
 
 	List<Pessoa> pesquisar(PessoaDTO dto);
 
 	Pessoa pesquisarPorId(Long id);
+	
+	List<Pessoa> listarTodos();
 
 }

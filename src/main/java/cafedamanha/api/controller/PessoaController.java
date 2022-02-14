@@ -23,7 +23,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/pessoa")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-@CrossOrigin("https://cafemanhafront-api.herokuapp.com")
+@CrossOrigin("https://cafemanhafront-api.herokuapp.com/")
 public class PessoaController {
 	private final PessoaService service;
 
@@ -59,4 +59,10 @@ public class PessoaController {
 	public ResponseEntity<?> pesquisarPorId(@PathVariable(required = true) Long id) {
 		return ResponseEntity.status(HttpStatus.OK).body(service.pesquisarPorId(id));
 	}
+	
+	@GetMapping("/listartodos")
+	public ResponseEntity<?> listarTodos() {
+		return ResponseEntity.status(HttpStatus.OK).body(service.listarTodos());
+	}
+	
 }

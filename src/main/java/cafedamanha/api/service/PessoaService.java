@@ -1,5 +1,6 @@
 package cafedamanha.api.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,13 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cafedamanha.api.dto.ItemCafeManhaDTO;
 import cafedamanha.api.dto.PessoaDTO;
-import cafedamanha.api.entity.ItemCafeManha;
+import cafedamanha.api.dto.PessoaItemCafeManhaDTO;
 import cafedamanha.api.entity.Pessoa;
 import cafedamanha.api.entity.PessoaItemCafeManha;
 import cafedamanha.api.exception.PessoaException;
 import cafedamanha.api.mapper.ItemCafeManhaMapper;
+import cafedamanha.api.mapper.PessoaItemCafeManhaMapper;
 import cafedamanha.api.mapper.PessoaMapper;
-import cafedamanha.api.repository.ItemCafeManhaRepository;
 import cafedamanha.api.repository.PessoaItemCafeManhaRepository;
 import cafedamanha.api.repository.PessoaRepository;
 
@@ -31,6 +32,9 @@ public class PessoaService {
 
 	@Autowired
 	private ItemCafeManhaMapper mapperItem;
+
+	@Autowired
+	private PessoaItemCafeManhaMapper mapperPessoaItem;
 
 	@Autowired
 	private PessoaRepository repository;
@@ -57,7 +61,8 @@ public class PessoaService {
 
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void excluir(Long id) {
-		repository.deletar(id);
+		repositoryItem.excluirPessoaItemCafeManha(id);
+		repository.excluir(id);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
@@ -76,7 +81,14 @@ public class PessoaService {
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public PessoaDTO alterar(PessoaDTO dto) {
 		validacao(dto);
-
+		Long idPessoa = dto.getId();
+		repositoryItem.excluirPessoaItemCafeManha(idPessoa);
+		for (ItemCafeManhaDTO itemCafeManhaDTO : dto.getListaSelecionado()) {
+			PessoaItemCafeManha pessoaItem = new PessoaItemCafeManha();
+			pessoaItem.setItemCafeManha(mapperItem.toEntity(itemCafeManhaDTO));
+			pessoaItem.setPessoa(new Pessoa(idPessoa));
+			repositoryItem.inserir(pessoaItem);
+		}
 		repository.alterar(mapper.toEntity(dto));
 		return dto;
 
@@ -87,10 +99,48 @@ public class PessoaService {
 		return mapper.toDto(repository.pesquisar(dto));
 
 	}
+	
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public List<PessoaDTO> listarTodos() {
+		
+		
+		List<PessoaDTO> listDTO = mapper.toDto(repository.listarTodos());
+		
+		for (PessoaDTO pessoaDTO : listDTO) {
+			
+			List<PessoaItemCafeManhaDTO> listaItensAssociado = mapperPessoaItem
+					.toDto(repositoryItem.pesquisarPessoaItemCafeManhaPorId(pessoaDTO.getId()));
+			
+			
+			for (PessoaItemCafeManhaDTO pessoaItemCafeDTO : listaItensAssociado) {
+				if (pessoaDTO.getListaSelecionado() == null) {
+					pessoaDTO.setListaSelecionado(new ArrayList<>());
+				}
+				pessoaDTO.getListaSelecionado().add(pessoaItemCafeDTO.getItemCafeManha());
+			}
+			
+		}
+		
+		
+		
+		return listDTO;	
+		
+	}
+
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public PessoaDTO pesquisarPorId(Long id) {
 		PessoaDTO dto = mapper.toDto(repository.pesquisarPorId(id));
+
+		List<PessoaItemCafeManhaDTO> listaItensAssociado = mapperPessoaItem
+				.toDto(repositoryItem.pesquisarPessoaItemCafeManhaPorId(id));
+
+		for (PessoaItemCafeManhaDTO pessoaItemCafeDTO : listaItensAssociado) {
+			if (dto.getListaSelecionado() == null) {
+				dto.setListaSelecionado(new ArrayList<>());
+			}
+			dto.getListaSelecionado().add(pessoaItemCafeDTO.getItemCafeManha());
+		}
 		return dto;
 
 	}

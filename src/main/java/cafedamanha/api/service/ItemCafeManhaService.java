@@ -9,8 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cafedamanha.api.dto.ItemCafeManhaDTO;
 import cafedamanha.api.dto.PessoaDTO;
+import cafedamanha.api.dto.PessoaItemCafeManhaDTO;
 import cafedamanha.api.mapper.ItemCafeManhaMapper;
+import cafedamanha.api.mapper.PessoaItemCafeManhaMapper;
 import cafedamanha.api.repository.ItemCafeManhaRepository;
+import cafedamanha.api.repository.PessoaItemCafeManhaRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -21,11 +24,12 @@ public class ItemCafeManhaService {
 
 	@Autowired
 	private ItemCafeManhaRepository repository;
-
+	
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<ItemCafeManhaDTO> listarItemCafeManha() {
 		return mapper.toDto(repository.listarItemCafeManha());
 
 	}
+	
 
 }
