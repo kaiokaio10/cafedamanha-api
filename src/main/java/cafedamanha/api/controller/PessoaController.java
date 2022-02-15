@@ -23,7 +23,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/pessoa")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-@CrossOrigin("http://localhost:4200/")
+@CrossOrigin("https://cafemanhafront-api.herokuapp.com/")
 public class PessoaController {
 	private final PessoaService service;
 
