@@ -26,6 +26,4 @@ public class PessoaItemCafeManhaController {
 	public ResponseEntity<?> pesquisarItemCafeManhaPorIdPessoa(@PathVariable(required = true) Long idPessoa) {
 		return ResponseEntity.status(HttpStatus.OK).body(service.pesquisarItemCafeManhaPorIdPessoa(idPessoa));
 	}
-	
-
 }

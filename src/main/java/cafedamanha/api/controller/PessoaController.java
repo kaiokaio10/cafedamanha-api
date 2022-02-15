@@ -63,5 +63,4 @@ public class PessoaController {
 	public ResponseEntity<?> listarTodos() {
 		return ResponseEntity.status(HttpStatus.OK).body(service.listarTodos());
 	}
-
 }
