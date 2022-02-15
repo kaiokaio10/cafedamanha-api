@@ -17,7 +17,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/itemcafemanha")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-@CrossOrigin("https://cafemanhafront-api.herokuapp.com/")
+@CrossOrigin("http://localhost:4200/")
 public class ItemCafeManhaController {
 
 	private final ItemCafeManhaService service;

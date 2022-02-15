@@ -3,7 +3,9 @@ package cafedamanha.api.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import cafedamanha.api.entity.Pessoa;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
