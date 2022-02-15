@@ -10,21 +10,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import cafedamanha.api.service.ItemCafeManhaService;
+import cafedamanha.api.service.PessoaItemCafeManhaService;
 import lombok.AllArgsConstructor;
 
 @Controller
 @RestController
-@RequestMapping("/itemcafemanha")
+@RequestMapping("/pessoaitemcafemanha")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @CrossOrigin("https://cafemanhafront-api.herokuapp.com/")
-public class ItemCafeManhaController {
-
-	private final ItemCafeManhaService service;
-
-	@GetMapping()
-	public ResponseEntity<?> listarItemCafeManha() {
-		return ResponseEntity.status(HttpStatus.OK).body(service.listarItemCafeManha());
+public class PessoaItemCafeManhaController {
+	
+	private PessoaItemCafeManhaService service;
+	
+	@GetMapping("/{idPessoa}")
+	public ResponseEntity<?> pesquisarItemCafeManhaPorIdPessoa(@PathVariable(required = true) Long idPessoa) {
+		return ResponseEntity.status(HttpStatus.OK).body(service.pesquisarItemCafeManhaPorIdPessoa(idPessoa));
 	}
 	
+
 }

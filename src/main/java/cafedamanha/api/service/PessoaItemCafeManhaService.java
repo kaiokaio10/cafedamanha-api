@@ -9,22 +9,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cafedamanha.api.dto.ItemCafeManhaDTO;
 import cafedamanha.api.mapper.ItemCafeManhaMapper;
-import cafedamanha.api.repository.ItemCafeManhaRepository;
+import cafedamanha.api.repository.PessoaItemCafeManhaRepository;
 
 @Service
 @Transactional(readOnly = true)
-public class ItemCafeManhaService {
-
+public class PessoaItemCafeManhaService {
+	
+	@Autowired
+	private PessoaItemCafeManhaRepository repository;
+	
 	@Autowired
 	private ItemCafeManhaMapper mapper;
-
-	@Autowired
-	private ItemCafeManhaRepository repository;
 	
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
-	public List<ItemCafeManhaDTO> listarItemCafeManha() {
-		return mapper.toDto(repository.listarItemCafeManha());
-
+	public List<ItemCafeManhaDTO> pesquisarItemCafeManhaPorIdPessoa(Long idPessoa) {
+		return mapper.toDto(repository.pesquisarItemCafeManhaPorIdPessoa(idPessoa));
+		
 	}
+	
+	
 
 }

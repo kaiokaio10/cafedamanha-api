@@ -67,6 +67,7 @@ public class PessoaService {
 
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public PessoaDTO inserir(PessoaDTO dto) {
+		validacao(dto);
 		Long idPessoa = repository.inserir(mapper.toEntity(dto));
 
 		for (ItemCafeManhaDTO itemCafeManhaDTO : dto.getListaSelecionado()) {
@@ -94,13 +95,13 @@ public class PessoaService {
 
 	}
 
-	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<PessoaDTO> pesquisar(PessoaDTO dto) {
 		return mapper.toDto(repository.pesquisar(dto));
 
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<PessoaDTO> listarTodos() {
 		
 		
@@ -109,7 +110,7 @@ public class PessoaService {
 		for (PessoaDTO pessoaDTO : listDTO) {
 			
 			List<PessoaItemCafeManhaDTO> listaItensAssociado = mapperPessoaItem
-					.toDto(repositoryItem.pesquisarPessoaItemCafeManhaPorId(pessoaDTO.getId()));
+					.toDto(repositoryItem.pesquisarPessoaItemCafeManhaPorIdPessoa(pessoaDTO.getId()));
 			
 			
 			for (PessoaItemCafeManhaDTO pessoaItemCafeDTO : listaItensAssociado) {
@@ -133,7 +134,7 @@ public class PessoaService {
 		PessoaDTO dto = mapper.toDto(repository.pesquisarPorId(id));
 
 		List<PessoaItemCafeManhaDTO> listaItensAssociado = mapperPessoaItem
-				.toDto(repositoryItem.pesquisarPessoaItemCafeManhaPorId(id));
+				.toDto(repositoryItem.pesquisarPessoaItemCafeManhaPorIdPessoa(id));
 
 		for (PessoaItemCafeManhaDTO pessoaItemCafeDTO : listaItensAssociado) {
 			if (dto.getListaSelecionado() == null) {
