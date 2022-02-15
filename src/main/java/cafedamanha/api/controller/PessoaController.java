@@ -36,10 +36,9 @@ public class PessoaController {
 	}
 
 	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> excluir(@PathVariable Long id) {
 		service.excluir(id);
-		return ResponseEntity.status(HttpStatus.OK).body("Pessoa removida com sucesso");
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Pessoa removida com sucesso");
 	}
 
 	@PutMapping
@@ -59,10 +58,10 @@ public class PessoaController {
 	public ResponseEntity<?> pesquisarPorId(@PathVariable(required = true) Long id) {
 		return ResponseEntity.status(HttpStatus.OK).body(service.pesquisarPorId(id));
 	}
-	
+
 	@GetMapping("/listartodos")
 	public ResponseEntity<?> listarTodos() {
 		return ResponseEntity.status(HttpStatus.OK).body(service.listarTodos());
 	}
-	
+
 }

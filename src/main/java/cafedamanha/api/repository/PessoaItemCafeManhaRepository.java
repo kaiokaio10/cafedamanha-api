@@ -23,4 +23,6 @@ public interface PessoaItemCafeManhaRepository
 	@Query(value = "DELETE FROM PESSOA_ITEM_CAFE_MANHA WHERE ID_PESSOA = :id", nativeQuery = true)
 	void excluirPessoaItemCafeManha(@Param("id") Long id);
 
+	
+
 }

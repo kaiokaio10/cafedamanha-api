@@ -40,41 +40,63 @@ public class PessoaService {
 	private PessoaRepository repository;
 
 	@Autowired
-	private PessoaItemCafeManhaRepository repositoryItem;
+	private PessoaItemCafeManhaRepository repositoryPessoaItem;
+	
 
 	@Autowired
 	private MessageSource message;
 
 	private void validacao(PessoaDTO dto) {
 		if (StringUtils.isBlank(dto.getNome())) {
-			throw new PessoaException(message.getMessage("mensagem.campo.obrigatorio", new Object[] { "nome" },
+			throw new PessoaException(message.getMessage("mensagem.campo.obrigatorio", new Object[] { "Nome" },
 					LocaleContextHolder.getLocale()));
 		}
-
 		if (StringUtils.isBlank(dto.getCpf())) {
-			throw new PessoaException(message.getMessage("mensagem.campo.obrigatorio", new Object[] { "cpf" },
+			throw new PessoaException(message.getMessage("mensagem.campo.obrigatorio", new Object[] { "CPF" },
 					LocaleContextHolder.getLocale()));
 		}
+		if (dto.getListaSelecionado().isEmpty()) {
+			throw new PessoaException(message.getMessage("mensagem.campo.obrigatorio", new Object[] { "Trazer para o café da manha" },
+					LocaleContextHolder.getLocale()));
+		}
+		List<Long> idsItens = new ArrayList<>();
+		for (ItemCafeManhaDTO itemCafeManha : dto.getListaSelecionado()) {
+			idsItens.add(itemCafeManha.getId());
+		}
+		
+		List<PessoaItemCafeManha> listaPessoaItens = repositoryPessoaItem.pesquisarItemCafeManhaPorIdItem(idsItens,dto.getId());
+		if (listaPessoaItens != null && !listaPessoaItens.isEmpty()) {
+			List<String> listaItensExistentes = new ArrayList<>();
+			for (PessoaItemCafeManha pessoaItemCafeManha : listaPessoaItens) {
+				listaItensExistentes.add(pessoaItemCafeManha.getItemCafeManha().getNome());
+			}
+			String itensAdicionados = StringUtils.join(listaItensExistentes,",");
+			throw new PessoaException(message.getMessage("mensagem.item.existe", new Object[] {itensAdicionados.toString()},
+					LocaleContextHolder.getLocale()));
+			
+		}
+		
 		return;
 
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void excluir(Long id) {
-		repositoryItem.excluirPessoaItemCafeManha(id);
+		repositoryPessoaItem.excluirPessoaItemCafeManha(id);
 		repository.excluir(id);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public PessoaDTO inserir(PessoaDTO dto) {
 		validacao(dto);
+		
 		Long idPessoa = repository.inserir(mapper.toEntity(dto));
 
 		for (ItemCafeManhaDTO itemCafeManhaDTO : dto.getListaSelecionado()) {
 			PessoaItemCafeManha pessoaItem = new PessoaItemCafeManha();
 			pessoaItem.setItemCafeManha(mapperItem.toEntity(itemCafeManhaDTO));
 			pessoaItem.setPessoa(new Pessoa(idPessoa));
-			repositoryItem.inserir(pessoaItem);
+			repositoryPessoaItem.inserir(pessoaItem);
 		}
 		return dto;
 	}
@@ -82,13 +104,12 @@ public class PessoaService {
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public PessoaDTO alterar(PessoaDTO dto) {
 		validacao(dto);
-		Long idPessoa = dto.getId();
-		repositoryItem.excluirPessoaItemCafeManha(idPessoa);
+		repositoryPessoaItem.excluirPessoaItemCafeManha(dto.getId());
 		for (ItemCafeManhaDTO itemCafeManhaDTO : dto.getListaSelecionado()) {
 			PessoaItemCafeManha pessoaItem = new PessoaItemCafeManha();
 			pessoaItem.setItemCafeManha(mapperItem.toEntity(itemCafeManhaDTO));
-			pessoaItem.setPessoa(new Pessoa(idPessoa));
-			repositoryItem.inserir(pessoaItem);
+			pessoaItem.setPessoa(new Pessoa(dto.getId()));
+			repositoryPessoaItem.inserir(pessoaItem);
 		}
 		repository.alterar(mapper.toEntity(dto));
 		return dto;
@@ -110,7 +131,7 @@ public class PessoaService {
 		for (PessoaDTO pessoaDTO : listDTO) {
 			
 			List<PessoaItemCafeManhaDTO> listaItensAssociado = mapperPessoaItem
-					.toDto(repositoryItem.pesquisarPessoaItemCafeManhaPorIdPessoa(pessoaDTO.getId()));
+					.toDto(repositoryPessoaItem.pesquisarPessoaItemCafeManhaPorIdPessoa(pessoaDTO.getId()));
 			
 			
 			for (PessoaItemCafeManhaDTO pessoaItemCafeDTO : listaItensAssociado) {
@@ -134,7 +155,7 @@ public class PessoaService {
 		PessoaDTO dto = mapper.toDto(repository.pesquisarPorId(id));
 
 		List<PessoaItemCafeManhaDTO> listaItensAssociado = mapperPessoaItem
-				.toDto(repositoryItem.pesquisarPessoaItemCafeManhaPorIdPessoa(id));
+				.toDto(repositoryPessoaItem.pesquisarPessoaItemCafeManhaPorIdPessoa(id));
 
 		for (PessoaItemCafeManhaDTO pessoaItemCafeDTO : listaItensAssociado) {
 			if (dto.getListaSelecionado() == null) {
