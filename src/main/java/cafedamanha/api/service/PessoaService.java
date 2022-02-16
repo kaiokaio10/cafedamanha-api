@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,6 @@ public class PessoaService {
 
 	@Autowired
 	private PessoaItemCafeManhaRepository repositoryPessoaItem;
-	
 
 	@Autowired
 	private MessageSource message;
@@ -56,27 +56,26 @@ public class PessoaService {
 					LocaleContextHolder.getLocale()));
 		}
 		if (dto.getListaSelecionado().isEmpty()) {
-			throw new PessoaException(message.getMessage("mensagem.campo.obrigatorio", new Object[] { "Trazer para o café da manha" },
-					LocaleContextHolder.getLocale()));
+			throw new PessoaException(message.getMessage("mensagem.campo.obrigatorio",
+					new Object[] { "Trazer para o café da manha" }, LocaleContextHolder.getLocale()));
 		}
 		List<Long> idsItens = new ArrayList<>();
 		for (ItemCafeManhaDTO itemCafeManha : dto.getListaSelecionado()) {
 			idsItens.add(itemCafeManha.getId());
 		}
-		
-		List<PessoaItemCafeManha> listaPessoaItens = repositoryPessoaItem.pesquisarItemCafeManhaPorIdItem(idsItens,dto.getId());
+
+		List<PessoaItemCafeManha> listaPessoaItens = repositoryPessoaItem.pesquisarItemCafeManhaPorIdItem(idsItens,
+				dto.getId());
 		if (listaPessoaItens != null && !listaPessoaItens.isEmpty()) {
 			List<String> listaItensExistentes = new ArrayList<>();
 			for (PessoaItemCafeManha pessoaItemCafeManha : listaPessoaItens) {
 				listaItensExistentes.add(pessoaItemCafeManha.getItemCafeManha().getNome());
 			}
-			String itensAdicionados = StringUtils.join(listaItensExistentes,",");
-			throw new PessoaException(message.getMessage("mensagem.item.existe", new Object[] {itensAdicionados.toString()},
-					LocaleContextHolder.getLocale()));
-			
+			String itensAdicionados = StringUtils.join(listaItensExistentes, ",");
+			throw new PessoaException(message.getMessage("mensagem.item.existe",
+					new Object[] { itensAdicionados.toString() }, LocaleContextHolder.getLocale()));
+
 		}
-		
-		return;
 
 	}
 
@@ -89,8 +88,16 @@ public class PessoaService {
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public PessoaDTO inserir(PessoaDTO dto) {
 		validacao(dto);
-		
-		Long idPessoa = repository.inserir(mapper.toEntity(dto));
+		Long idPessoa = null;
+
+		try {
+			idPessoa = repository.inserir(mapper.toEntity(dto));
+			dto.setId(idPessoa);
+
+		} catch (DataIntegrityViolationException e) {
+			throw new PessoaException(
+					message.getMessage("mensagem.cpf.existe", new Object[] {}, LocaleContextHolder.getLocale()));
+		}
 
 		for (ItemCafeManhaDTO itemCafeManhaDTO : dto.getListaSelecionado()) {
 			PessoaItemCafeManha pessoaItem = new PessoaItemCafeManha();
@@ -104,6 +111,7 @@ public class PessoaService {
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public PessoaDTO alterar(PessoaDTO dto) {
 		validacao(dto);
+
 		repositoryPessoaItem.excluirPessoaItemCafeManha(dto.getId());
 		for (ItemCafeManhaDTO itemCafeManhaDTO : dto.getListaSelecionado()) {
 			PessoaItemCafeManha pessoaItem = new PessoaItemCafeManha();
@@ -111,7 +119,13 @@ public class PessoaService {
 			pessoaItem.setPessoa(new Pessoa(dto.getId()));
 			repositoryPessoaItem.inserir(pessoaItem);
 		}
-		repository.alterar(mapper.toEntity(dto));
+		try {
+			repository.alterar(mapper.toEntity(dto));
+		} catch (DataIntegrityViolationException e) {
+			throw new PessoaException(
+					message.getMessage("mensagem.cpf.existe", new Object[] {}, LocaleContextHolder.getLocale()));
+		}
+
 		return dto;
 
 	}
@@ -121,34 +135,29 @@ public class PessoaService {
 		return mapper.toDto(repository.pesquisar(dto));
 
 	}
-	
+
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<PessoaDTO> listarTodos() {
-		
-		
+
 		List<PessoaDTO> listDTO = mapper.toDto(repository.listarTodos());
-		
+
 		for (PessoaDTO pessoaDTO : listDTO) {
-			
+
 			List<PessoaItemCafeManhaDTO> listaItensAssociado = mapperPessoaItem
 					.toDto(repositoryPessoaItem.pesquisarPessoaItemCafeManhaPorIdPessoa(pessoaDTO.getId()));
-			
-			
+
 			for (PessoaItemCafeManhaDTO pessoaItemCafeDTO : listaItensAssociado) {
 				if (pessoaDTO.getListaSelecionado() == null) {
 					pessoaDTO.setListaSelecionado(new ArrayList<>());
 				}
 				pessoaDTO.getListaSelecionado().add(pessoaItemCafeDTO.getItemCafeManha());
 			}
-			
-		}
-		
-		
-		
-		return listDTO;	
-		
-	}
 
+		}
+
+		return listDTO;
+
+	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public PessoaDTO pesquisarPorId(Long id) {

@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import cafedamanha.api.dto.PessoaItemCafeManhaDTO;
 import cafedamanha.api.entity.ItemCafeManha;
 import cafedamanha.api.entity.PessoaItemCafeManha;
 

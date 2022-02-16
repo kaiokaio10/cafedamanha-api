@@ -176,8 +176,8 @@ public class PessoaServiceTest {
 	    public void cadastrar_pessoa_vazio() {
 	        when(repository.inserir(Mockito.any(Pessoa.class)));
 	        when(mapper.toEntity(Mockito.any(PessoaDTO.class))).thenReturn(montaEntityVazio());
-	        when(mapper.toDto(Mockito.any(Pessoa.class))).thenReturn(montaDTOSemLista());
-	        PessoaDTO pessoaDTO = service.inserir(montaDTOSemLista());
+	        when(mapper.toDto(Mockito.any(Pessoa.class))).thenReturn(montaDTOVazio());
+	        PessoaDTO pessoaDTO = service.inserir(montaDTOVazio());
 	        Mockito.verify(repository, Mockito.atLeastOnce()).inserir(montaEntityVazio());
 	        assertNotNull(pessoaDTO);
 	    }
