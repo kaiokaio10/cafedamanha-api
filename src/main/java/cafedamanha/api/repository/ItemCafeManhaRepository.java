@@ -11,7 +11,7 @@ import cafedamanha.api.entity.ItemCafeManha;
 @Repository
 public interface ItemCafeManhaRepository extends JpaRepository<ItemCafeManha, Long> {
 
-	@Query(value = "SELECT * FROM ITEM_CAFE_MANHA", nativeQuery = true)
+	@Query(value = "SELECT * FROM ITEM_CAFE_MANHA ORDER BY NOME ASC", nativeQuery = true)
 	List<ItemCafeManha> listarItemCafeManha();
 
 }
